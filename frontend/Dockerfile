@@ -1,11 +1,16 @@
 FROM node:16-alpine
 
+RUN mkdir -p /home/node/app
 WORKDIR /usr/app
-COPY package.json yarn.lock ./
+COPY --chown=node package.json ./
 
 RUN yarn
 
+COPY --chown=node ./ .
+
+RUN yarn build
+
 COPY . .
 
-EXPOSE 3001
-CMD ["yarn", "start"]
+RUN rm -rf src
+CMD ["build", "-p", "3002"]
