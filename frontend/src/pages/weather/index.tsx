@@ -27,16 +27,19 @@ const Weather: React.FC = () => {
 
       WeatherService.send(cityName).then(
         (response) => {
-          console.log(response);
-          setErrorMessage('');
-          navigate('/weather-info', { state: { ...response, cityName } });
+          if (response.status === 503) {
+            setErrorMessage("Service unavailable. Because the allowed number of requests has been exceeded.");
+          } else {
+            setErrorMessage('');
+            navigate('/weather-info', { state: { ...response, cityName } });
+          }
         },
         (error) => {
           const resMessage =
             (Boolean((error.response?.data?.message))) ||
             (Boolean(error.message)) ||
             error.toString();
-          console.log(resMessage);
+          console.log('Error', resMessage);
 
           setErrorMessage(resMessage);
         },
@@ -50,7 +53,7 @@ const Weather: React.FC = () => {
 
   return (
     <Container>
-      <form onSubmit={() => handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <Card>
           <h1>Weather conditions</h1>
 
